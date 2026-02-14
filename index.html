@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Valantine ❤️</title>
+  <style>
+    :root {
+      --bg: #0f0f14;
+      --card: #1b1b24;
+      --accent: #ff00c8;
+      --text: #ffffff;
+      --muted: #b3b3c2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: radial-gradient(circle at top, #1f1f2e, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* LOCK */
+    #lockScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #14141f, #0a0a12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .lock-box {
+      background: var(--card);
+      padding: 40px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,.6);
+    }
+
+    .shake { animation: shake 0.4s; }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+
+    .lock-box h1 { color: var(--accent); }
+    .lock-box p { color: var(--muted); }
+
+    .lock-box input, .lock-box button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .lock-box button {
+      background: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .error { color: #ff4d4d; display: none; margin-top: 10px; }
+
+    header { text-align: center; padding: 80px 20px 40px; }
+    header h2 { color: var(--accent); font-size: 42px; }
+    header p { color: var(--muted); }
+
+    section { max-width: 1200px; margin: auto; padding: 40px 20px; }
+
+    /* GALLERY */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      cursor: pointer;
+    }
+
+    .card img,
+    .card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .card:active img,
+    .card:active video {
+      transform: scale(1.07);
+      box-shadow: 0 0 25px rgba(255,95,162,.6);
+    }
+
+    /* VIEWER */
+    #viewer {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+
+    #viewerBox {
+      background: #111222;
+      padding: 12px;
+      border-radius: 18px;
+      max-width: 55vw;
+      max-height: 55vh;
+      box-shadow: 0 0 30px rgba(0,0,0,.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #viewerContent {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 14px;
+    }
+
+    #closeViewer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      background: var(--accent);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    #privateSection { display: none; }
+
+    .toggle-btn {
+      margin: 30px auto;
+      display: block;
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .timeline {
+      background: linear-gradient(135deg,#1f1f30,#14141f);
+      padding: 30px;
+      border-radius: 25px;
+      margin-top: 50px;
+    }
+
+    .timeline h3 {
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .timeline li {
+      background: #222231;
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--accent);
+      list-style: none;
+    }
+
+    .message-box {
+      background: linear-gradient(135deg, #1f1f30, #14141f);
+      padding: 40px;
+      border-radius: 25px;
+      margin-top: 40px;
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 22px;
+      animation: floatUp linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      to { transform: translateY(-120vh) scale(1.4); opacity: 0; }
+    }
+
+    #secretHeart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      opacity: .6;
+    }
+
+    /* SECRET MESSAGE */
+    #privateMsg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      backdrop-filter: blur(12px);
+    }
+
+    .pm-box {
+      background: rgba(27,27,36,0.75);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 25px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(0,0,0,.7);
+      position: relative;
+    }
+
+    #closeX {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: #ff4f73;
+      border: none;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .finger-area {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,.3);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: .8; }
+      50% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); opacity: .8; }
+    }
+
+    .finger-area img {
+      width: 70px;
+      opacity: .9;
+      filter: drop-shadow(0 0 8px rgba(255,95,162,.7));
+    }
+
+    #wrongPass {
+      color: #ff4d4d;
+      display: none;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<!-- VIEWER -->
+<div id="viewer">
+  <button id="closeViewer">X</button>
+  <div id="viewerBox">
+    <img id="viewerContent">
+  </div>
+</div>
+
+<!-- LOCK -->
+<div id="lockScreen">
+  <div class="lock-box" id="lockBox">
+    <h1>Retaj??</h1>
+    <p>Enter the passcode</p>
+    <input type="password" id="pass" />
+    <button onclick="unlock()">Enter</button>
+    <div class="error" id="error">Wrong passcode</div>
+  </div>
+</div>
+
+<header>
+  <h2>Happy Valantine Day Ratoja</h2>
+  <p>14/02</p>
+</header>
+
+<section>
+
+<h3>Our Memories 📸</h3>
+
+<div class="gallery">
+
+  <div class="card"><video src="omar/Snapchat-1261769400.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-1294519744.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-1368740898.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-1416880678.jpg.jpeg"></div>
+  <div class="card"><img src="omar/Snapchat-1452690284.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-1752217207.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/Snapchat-1754132888.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/Snapchat-1778533248.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/Snapchat-2137413773.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20250615-WA0009.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20250624-WA0067.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20250624-WA0070.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20250723-WA0013.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20260209-WA0046.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/VID-20260209-WA0047.mp4" controls playsinline></video></div>
+  
+  <div class="card"><video src="omar/0c7cab2d793c855863c8fc0afff4d00b.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/49eea3af0d89fd133b8313c1000dd3d5.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/57e11ac5a4ae885d1d5154680e173b5a.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/2025-10-16-204924227.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/20250915_024928_370.jpg.jpeg"></div>
+  <div class="card"><img src="omar/1768207627133.jpg.jpeg"></div>
+  <div class="card"><video src="omar/a81f6df5f6a56d622dae19d19896289b.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/c47e65cf5cd9d2db90d813e76b0798ca.mp4" controls playsinline></video></div>
+  
+  <div class="card"><img src="omar/IMG_1030.jpg"></div>
+  <div class="card"><img src="omar/IMG_1044.jpg"></div>
+  <div class="card"><img src="omar/IMG_2711.JPG.jpeg"></div>
+  <div class="card"><img src="omar/IMG_2761.jpg"></div>
+  <div class="card"><img src="omar/IMG_2770.JPG.jpeg"></div>
+  <div class="card"><img src="omar/IMG_2990.jpg"></div>
+  <div class="card"><img src="omar/IMG_2993.jpg"></div>
+  
+  <div class="card"><video src="omar/IMG_4155.MOV" controls playsinline></video></div>
+  
+  <div class="card"><img src="omar/IMG_4169.jpg"></div>
+  <div class="card"><img src="omar/IMG_4191.jpg"></div>
+  <div class="card"><img src="omar/IMG_4194.jpg"></div>
+  <div class="card"><img src="omar/IMG_4195.jpg"></div>
+  <div class="card"><img src="omar/IMG_4208.jpg"></div>
+  <div class="card"><img src="omar/IMG_20250724_002712.jpg.jpeg"></div>
+  <div class="card"><img src="omar/IMG_20251212_172946_409.jpg.jpeg"></div>
+  <div class="card"><img src="omar/IMG-20250615-WA0008.jpg.jpeg"></div>
+  <div class="card"><img src="omar/IMG-20250624-WA0068.jpg.jpeg"></div>
+  <div class="card"><img src="omar/IMG-20250915-WA0043.jpg.jpeg"></div>
+  <div class="card"><img src="omar/IMG-20260209-WA0032.jpg.jpeg"></div>
+  
+  <div class="card"><video src="omar/Screenrecorder-2026-02-08-17-52-50-688.mp4" controls playsinline></video></div>
+
+  
+  <div class="card"><video src="omar/Snapchat-145057381.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-175858268.jpg.jpeg"></div>
+  <div class="card"><img src="omar/Snapchat-223909998.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-270951289.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/Snapchat-363807532.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-428018109.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-436694511.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-448479124.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-534368877.mp4" controls playsinline></video></div>
+  <div class="card"><video src="omar/Snapchat-537091336.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-726400582.jpg.jpeg"></div>
+  <div class="card"><video src="omar/Snapchat-746831353.mp4" controls playsinline></video></div>
+  <div class="card"><img src="omar/Snapchat-1063593878.jpg.jpeg"></div>
+  <div class="card"><img src="omar/Snapchat-1189502462.jpg.jpeg"></div>
+
+
+</div>
+
+
+<div class="timeline">
+  <h3>Special Days & Memories 🗓️</h3>
+  <ul>
+    <li>07/07/2024 — Awl mara shofna baad feha fe el donia<li>
+    <li>05/08/2024 — Awl mara klmna baad chat fe el donia</li>
+    <li>06/08/2024 — Awl sora lena</li>
+    <li>12/10/2024 — Awl Eid melad lena w ehna sawa O.</li>
+    <li>01/10/2024 — Awl Eid melad lena w ehna sawa R.</li>
+    <li>23/06/2025 — Awl khroga lena Kan fe cfc</li>
+    <li>22/07/2025 — Lma nzlna el nady w laabna padel maa baad</li>
+    <li>11/09/2025 — Tany mara nokhrog maa baad w aadna fe cofe esmo Brioche Dorèe w aadna ntklm</li>
+    <li>12/09/2025 — Lama nzlna el sobh badri awy w aamltily ban cake ( kan helw awyyy )</li>
+    <li>01/10/2025 — Kan youm eid meladk w editk hdia w tany youm kharagna khroga tohfa fe el down town</li>
+    <li>09/10/2025 — Rohna el down town w aadna fe star bucks w gbna mn krispy kream </li>
+    <li>16/10/2025 — Lma rohna el nady w editiny ahla hdia fe el donia aashan eid melady</li>
+    <li>31/12/2025-01/01/2026 — Lma nzlna gardia maa baad w etklmna fe kol haga mdai'ana w edina l baad forsa aashan bnhb baad</li>
+    <li>29/01/2026 — Lma nzlna el nady w etklmna fe kol haga tany w mn saatha bada'na ntghyr w aadna ndhk</li>
+    <li>01/02/2026 — Lma rohna cfc w gbna ghazl banat aala shakl batah w aadna nlaab w ntswr</li>
+    <li>03/02/2026 — Lam rohna hide out maa baad baaidn aand el youm bs enty konty ahsn haga fe elyoum dah w wgodk fara' maaia awy</li>
+    <li>14/02/2026 — Aaiz a'olk enk ahsn haga hslt tol el snin ely fatet w badaai rbna enna nfdl mkamlin daimn bhbk awy </li>
+  </ul>
+</div>
+
+<div class="message-box">
+  <h3>Happy Valantine</h3>
+  <p>Aaiz a'olek enk ahsn w agmal haga hasltly fe hayaty , ehna ba'lna aktar mn sna aarfen baad bs belnsbaly de ahsn sna f hayaty ahsn mn alf sna maa hd tany aw shakhs tany, baatbrk dayman kull haga fe hayaty habubty w sahbty w sahby w okhty w benty w kull haga , bhebk awe ldarget eny mbaatsh aaref atkhial hayaty mn gherk mbaatsh ader astw3eb fekrt eny akon maa hd gherk aw enty tkony maa hd ghery ana , w msh hasebk tkony lhd gherk wla ana hala'y hd zyk aashan enty malya 3eny awe w awel mra ahed b keda w awel mra ahes eny fe 3laka w shakhs el odamy maly 3eny keda b mkhaleny msh shayef w msh habb ghero wla aaiz ghero w dayman bakon aaiz a3od maah w ndhk w ntklm w nkon mkan asrar l baad nehky ay haga mday'ana l baad w ntlaa hmomna l baad msh hd tany w nkhly mshakelna maa baad nhelha ehna w nhareb aashan baad . Enty aktr bent ana olt haamel el mostahel aashan afdl gmbha ana ma'drsh asebk ya retaj el fekra de asasn lewhda belnsbaly mostahela aashan ya retaj enty el bent el ana kont bdawr aaleha mn zman enty el bent el baghir aaleha aweeeee w ah baghir awe aaleky hta mn timon w hta saat baghir lma ahs en fe bent sahbtk enty btsharky maaha hayatek aktr mny baghir aaleky w enty mashya felshareaa baghir aaleky mn nafsy saat baghir aaleky lldarga eny nefsy tfdaly ganby ana bs mahdsh yshofk ghery msh moaa'd walahy bs bhs en la retaj de haga helwa awe mahdsh ynfaa yshofha ghiry aw yshof gamal da el hoa eh el habl da hoa momken hd ghiry ystah f 3younk el helwa de w baghir aaleky mn lebsk dayman bafdl ansahek kter w bafdl ataasb aaleky aw akhliky tzha'y mn kotr ma bnsahek bs baamel keda aashan aaref nazret el welad w aalashan bkhaf aaleky amal akon bhebk ezay law msh bkhaf aaleky w baghir aaleky w f nafs el wa't msh bheb a'fesh showia bheb anshek w ntaamel beraha aashan bhs eny baatbrk benty aktr mn sahbty el hoa baarfk el sah mn ghalt w bhs eny mabsot awe lma bshoufek bttghiry lel ahsn w btsmaay klamy bafrah awe bhes en ray'ee mohem belnsbalek w en enty btsky fya mkhliny mahl seka wna ad el seka de aashan bhebk w aahsna ya retaj ana mhma lafet w dort  msh hala'y bent zyk w bdaay rbna enna nfdl maa baad w enna nb'a mn naseeb baad w en ehna nefdal zy ma ehna bnhb baad w bnhareb ay haga aashan nkml maa baad w aashan ehna malnash ghir baad w mn el akher ana msh hasebk lhd tany ya retaj ya ana ya la aashan mhdsh ghiry ystahlk wla ystahel halawtek w shklk amr w 3younk tuhfa w dhketk w tare'tk fel kalam w hnitek mahdsh ghiry ya retaj el hiakhod kull da wna hafdl gambk dayman zy ma kmlna sna w arbaa shouhor hankml million sna maa baad w law fe youm ghlt f haga samhiny baad ma asalhk w nmashy l baad mshakel el hayah msh mestahla enna nekhsr baad aashan mshakel w nhawel neslah elaaketna ahsn l ahsn w ngrab hagat gdeda w naamel hagat maa baad kter helwa w mnfkrsh ghir f baad w nhawel mnaamlsh ay haga tday'na mn baad w ay haga haslt zman ana mb'ash far'ly ana samhtk f kull haga sshan bhebk aashan mhma tghlaty hafdl ahebk dayman w hafdl shafek ahla w ahsn wahda . Fe kalam kter f albe leky w mhma katbt msh hawsef nos ehsasy mn nhyetk bs el aaiz a'olo eny el fatra el fatt de kulha adet zekrayat helwa maaky w adet wa't helw awe w ayam kter belnsbaly momiza w enty maaya w badaay rbna en el ayam de matkhlash w nefdl maa baad.waad ya retaj hafdl gambk dayman w hafdl ahebk mhma hasl bhebk awe ya ahla haga f hayaty bmout feke❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</p>
+</div>
+
+</section>
+
+<div id="secretHeart">❤️</div>
+
+<!-- SECRET MESSAGE -->
+<div id="privateMsg">
+  <div class="pm-box">
+    <button id="closeX" onclick="closePrivateMsg()">X</button>
+
+    <div id="lockArea">
+      <h3>Private Message 🔐</h3>
+      <p>Password</p>
+
+      <div class="finger-area">
+        <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png">
+      </div>
+
+      <input type="password" id="secretInput" placeholder="Enter Secret Password" style="padding:10px;border-radius:10px;border:none;width:80%;font-size:16px;">
+      <button class="toggle-btn" onclick="checkSecret()">Unlock</button>
+      <div id="wrongPass">Wrong password 😢</div>
+    </div>
+
+    <div id="secretContent" style="display:none;">
+      <h3>😉</h3>
+      <p>Bhebkkkk aweee ya raroshtyy rbna ykhliky lya ya habibty w nefdal dayman maa baad keda w bmout feke bgd walahy w mhma hasl ana bhebk You light up my life love you ❤️❤️</p>
+      <button class="toggle-btn" onclick="closePrivateMsg()">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+const PASSCODE = "retash bodra";
+const SECRET_PASS = "bhbk";
+const music = document.getElementById('bgMusic');
+
+function unlock() {
+  if (pass.value === PASSCODE) {
+    lockScreen.style.display = 'none';
+    music.play().catch(()=>{});
+    startHearts();
+  } else {
+    error.style.display = 'block';
+    lockBox.classList.add('shake');
+    setTimeout(()=>lockBox.classList.remove('shake'),400);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && lockScreen.style.display !== 'none') unlock();
+});
+
+function startHearts() {
+  setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.innerText = '❤';
+    h.style.left = Math.random()*100+'vw';
+    h.style.animationDuration = (4+Math.random()*4)+'s';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),8000);
+  },600);
+}
+
+document.addEventListener('play', e => {
+  if (e.target.tagName === 'VIDEO') music.pause();
+}, true);
+
+document.addEventListener('pause', e => {
+  if (e.target.tagName === 'VIDEO') music.play().catch(()=>{});
+}, true);
+
+function togglePrivate() {
+  privateSection.style.display = privateSection.style.display === 'block' ? 'none' : 'block';
+}
+
+/* HEART ALWAYS OPENS */
+secretHeart.addEventListener('click', () => {
+  privateMsg.style.display = 'flex';
+});
+
+/* SECRET PASSWORD */
+function checkSecret() {
+  if(secretInput.value === SECRET_PASS){
+    wrongPass.style.display = "none";
+    lockArea.style.display = "none";
+    secretContent.style.display = "block";
+  } else {
+    wrongPass.style.display = "block";
+  }
+}
+
+function closePrivateMsg() {
+  privateMsg.style.display = 'none';
+  lockArea.style.display="block";
+  secretContent.style.display="none";
+  secretInput.value="";
+}
+
+/* VIEWER */
+const viewer = document.getElementById("viewer");
+const viewerImg = document.getElementById("viewerContent");
+const closeViewerBtn = document.getElementById("closeViewer");
+
+document.querySelectorAll(".card img").forEach(img=>{
+  img.addEventListener("click", ()=>{
+    viewerImg.src = img.src;
+    viewer.style.display = "flex";
+  });
+});
+
+closeViewerBtn.onclick = ()=> viewer.style.display="none";
+viewer.onclick = e=>{
+  if(e.target===viewer) viewer.style.display="none";
+};
+
+</script>
+
+</body>
+</html>
